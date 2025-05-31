@@ -4,106 +4,146 @@ Projeto de microserviços em Go para gerenciamento de atividades, professores, a
 
 ## Estrutura
 
-- **atividade_service**: Serviço para CRUD de atividades.
-- **pessoa_service**: Serviço para gerenciamento de professores, alunos e disciplinas.
+- **atividade**: Serviço para CRUD de atividades.
+- **resposta**: Serviço para CRUD de respostas.
 
 ## Tecnologias
 
-- Go (Golang)
-- GORM (ORM)
+- Python
+- Flask
 - SQLite (banco de dados)
-- Gorilla Mux (roteador HTTP)
 - Docker (para conteinerização)
 
 ## Como rodar localmente
 
 1. Instale as dependências:
-   ```sh
-   go mod tidy
+pip install flask
+pip install flask_sqlalchemy
+pip install requests
 
 
-## Inicie cada serviço em terminais separados:
+## Inicie cada API em terminais separados:
 
-cd pessoa_service
-go run .
-
-# Em outro terminal:
-cd atividade_service
-go run .
-
-# Como rodar com Docker
-Certifique-se de ter o Docker e o Docker Compose instalados.
-Na raiz do projeto, rode
+API school system:
 docker-compose up --build
 
-# Os serviços ficarão disponíveis em:
-pessoa_service: http://localhost:8081
-atividade_service: http://localhost:8080
+# Em outro terminal a API atividade:
+docker-compose up --build
+
+
+# As APIs ficarão disponíveis em:
+School System: http://api_turma:8081
+atividade: http://atividade:8080
 
 # Estrutura de pastas
 
-atividade_service/
-  controllers/
-  models/
-  routes.go
-  config.go
-  app.go
+atividade/
+  cliente/
+  controller/
+  model/
+  route/
+  config.py
+  app.py
   Dockerfile
+  docker-compose.yml
+  requirements.txt
 
-pessoa_service/
-  controllers/
-  models/
-  routes.go
-  config.go
-  app.go
-  Dockerfile
+
 
 # Exemplos de uso:
 
-# Professor
+# Atividade
 
-Listar professores
+POST -  /atividade
 
-GET http://localhost:8081/professores
+json:
 
-Criar Professor
 
-POST http://localhost:8081/professores
-Body: { "nome": "Novo Professor" }
+{
 
-Atualizar Professor
+  "id_turma": 1,
 
-PUT http://localhost:8081/professores/1
-Body: { "nome": "Professor Atualizado" }
+  "enunciado": "faça um hello world",
 
-Deletar Professor
+}
 
-DELETE http://localhost:8081/professores/1
 
-# Alunos 
 
-Listar Alunos 
+GET -  /atividade Lista todas as atividades:
 
-GET http://localhost:8081/alunos
+{
+  "enunciado": "faça um hello world",
 
-Criar Aluno
+  "id": 1,
 
-POST http://localhost:8081/alunos
-Body: { "nome": "Novo Aluno" }
+  "id_turma": 1,
 
-Obter Aluno por ID
+  "respostas": [
+   
+  ]
+}
 
-GET http://localhost:8081/alunos/1
 
-Atualizar Aluno
 
-PUT http://localhost:8081/alunos/1
-Body: { "nome": "Aluno Atualizado" }
+POST -  /resposta/ Cria uma nova resposta.
 
-Deletar Aluno
+json:
 
-DELETE http://localhost:8081/alunos/1
 
-# Verificação se o professor leciona a disciplina
+{
 
-GET http://localhost:8081/leciona/1/1
+"id_atividade": 1,
+
+"id_aluno": 1,
+
+"resposta": "helloworld.py",
+
+"nota": 7.0
+
+}
+
+
+
+GET -  /resposta/<aluno_id> Lista todas as respostas por aluno: 
+
+{
+
+  "enunciado": "faça um hello world",
+
+  "id": 1,
+
+  "id_turma": 1,
+
+  "respostas": 
+[
+    {
+
+      "id": 1,
+
+      "id_aluno": 1,
+
+      "nota": 7.0,
+
+      "resposta": "helloworld.py"
+
+    }
+  ]
+}
+
+
+GET -  /atividade/validar_turma/<turma_id> Verifica se uma turma existe (via outra API).
+
+Resposta:
+
+{
+  "valida": true
+}
+
+
+GET -  /resposta/validar_aluno/<aluno_id> Verifica se um aluno existe (via outra API).
+
+Resposta:
+
+{
+  "valida": true
+}
