@@ -79,6 +79,22 @@ func AtualizarAtividade(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(atividade)
 }
 
+// DELETE /atividades/{id}
+func DeletarAtividade(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, `{"erro":"ID inválido"}`, http.StatusBadRequest)
+		return
+	}
+	if err := models.DB.Delete(&models.Atividade{}, id).Error; err != nil {
+		http.Error(w, `{"erro":"Erro ao deletar atividade"}`, http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
+}
+
 // GET /atividades/{id_atividade}/professor/{id_professor}
 func ObterAtividadeParaProfessor(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -110,5 +126,6 @@ func RegisterAtividadeRoutes(r *mux.Router) {
 	r.HandleFunc("/atividades", CriarAtividade).Methods("POST")
 	r.HandleFunc("/atividades/{id}", ObterAtividade).Methods("GET")
 	r.HandleFunc("/atividades/{id}", AtualizarAtividade).Methods("PUT")
+	r.HandleFunc("/atividades/{id}", DeletarAtividade).Methods("DELETE")
 	r.HandleFunc("/atividades/{id_atividade}/professor/{id_professor}", ObterAtividadeParaProfessor).Methods("GET")
 }
